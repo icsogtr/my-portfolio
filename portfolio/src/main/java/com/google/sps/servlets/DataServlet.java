@@ -44,8 +44,8 @@ public final class DataServlet extends HttpServlet {
   @Override
   
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("Hello Chenxi!");
+   // response.setContentType("text/html;");
+   // response.getWriter().println("Hello Chenxi!");
 
 
 
@@ -61,29 +61,6 @@ public final class DataServlet extends HttpServlet {
     // Send the JSON as the response
     response.setContentType("application/json;");
     response.getWriter().println(json);
-
-
-     Query query = new Query("Task").addSort("timestamp", SortDirection.DESCENDING);
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(query);
-
-    List<Task> tasks = new ArrayList<>();
-    for (Entity entity : results.asIterable()) {
-      long id = entity.getKey().getId();
-      String title = (String) entity.getProperty("title");
-      long timestamp = (long) entity.getProperty("timestamp");
-
-      Task task = new Task(id, title, timestamp);
-      tasks.add(task);
-    }
-
-    Gson gson = new Gson();
-
-    response.setContentType("application/json;");
-    response.getWriter().println(gson.toJson(tasks));
-
-    //*/
     
 
   }
@@ -136,16 +113,6 @@ public final class DataServlet extends HttpServlet {
     response.setContentType("text/html;");
     response.getWriter().println(Arrays.toString(words));
 
-    String title = request.getParameter("title");
-    long timestamp = System.currentTimeMillis();
-
-    Entity taskEntity = new Entity("Task");
-    taskEntity.setProperty("title", title);
-    taskEntity.setProperty("timestamp", timestamp);
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(taskEntity);
-    response.sendRedirect("/index.html");
     
   }
 

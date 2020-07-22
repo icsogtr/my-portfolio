@@ -79,7 +79,7 @@ function getServerStats() {
     const statsListElement = document.getElementById('server-stats-container');
     statsListElement.innerHTML = '';
     statsListElement.appendChild(
-        createListElement('Start time: ' + stats.startTime));
+        createListElement('Start time2: ' + stats.startTime));
     statsListElement.appendChild(
         createListElement('Current time: ' + stats.currentTime));
     statsListElement.appendChild(
