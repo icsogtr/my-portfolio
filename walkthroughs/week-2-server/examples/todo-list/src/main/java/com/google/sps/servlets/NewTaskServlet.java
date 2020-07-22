@@ -38,7 +38,6 @@ public class NewTaskServlet extends HttpServlet {
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(taskEntity);
-
     response.sendRedirect("/index.html");
   }
 }

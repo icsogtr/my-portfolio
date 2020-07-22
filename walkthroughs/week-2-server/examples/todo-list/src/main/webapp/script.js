@@ -43,7 +43,6 @@ function createTaskElement(task) {
   taskElement.appendChild(deleteButtonElement);
   return taskElement;
 }
-
 /** Tells the server to delete the task. */
 function deleteTask(task) {
   const params = new URLSearchParams();
