@@ -16,28 +16,24 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet responsible for creating new tasks. */
-@WebServlet("/new-task")
-public class NewTaskServlet extends HttpServlet {
+/** Servlet responsible for deleting tasks. */
+@WebServlet("/delete-task")
+public class DeleteTaskServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String title = request.getParameter("title");
-    long timestamp = System.currentTimeMillis();
+    long id = Long.parseLong(request.getParameter("id"));
 
-    Entity taskEntity = new Entity("Task");
-    taskEntity.setProperty("title", title);
-    taskEntity.setProperty("timestamp", timestamp);
-
+    Key taskEntityKey = KeyFactory.createKey("Task", id);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(taskEntity);
-    response.sendRedirect("/index.html");
+    datastore.delete(taskEntityKey);
   }
 }

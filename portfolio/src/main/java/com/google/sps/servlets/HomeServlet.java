@@ -13,42 +13,63 @@
 // limitations under the License.
 
 package com.google.sps.servlets;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
+
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/shoutbox")
-public class ShoutboxServlet extends HttpServlet {
+@WebServlet("/home")
+public class HomeServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
+    response.setContentType("text/html");
     PrintWriter out = response.getWriter();
-    out.println("<h1>Shoutbox</h1>");
+    UserService userService = UserServiceFactory.getUserService();
+
+    // If user is not logged in, show a login form (could also redirect to a login page)
+    if (!userService.isUserLoggedIn()) {
+      String loginUrl = userService.createLoginURL("/home");
+      out.println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+      return;
+    }
+
+    // If user has not set a nickname, redirect to nickname page
+    //String nickname = getUserNickname(userService.getCurrentUser().getUserId());
+    /*if (nickname == null) {
+      response.sendRedirect("/nickname");
+      return;
+    }*/
+
+    // User is logged in and has a nickname, so the request can proceed
+    String logoutUrl = userService.createLogoutURL("/home");
+    out.println("<h1>Home</h1>");
+    //out.println("<p>Hello " + nickname + "!</p>");
+    out.println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
+    //out.println("<p>Change your nickname <a href=\"/nickname\">here</a>.</p>");
+    response.setContentType("text/html;");
+    PrintWriter out2 = response.getWriter();
+    out2.println("<h1>Shoutbox</h1>");
 
     // Only logged-in users can see the form
-    UserService userService = UserServiceFactory.getUserService();
+    userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
-      out.println("<p>Hello " + userService.getCurrentUser().getEmail() + "!</p>");
-      out.println("<p>Type a message and click submit:</p>");
-      out.println("<form method=\"POST\" action=\"/shoutbox\">");
-      out.println("<textarea name=\"text\"></textarea>");
-      out.println("<br/>");
-      out.println("<button>Submit</button>");
-      out.println("</form>");
+      out2.println("<p>Hello " + userService.getCurrentUser().getEmail() + "!</p>");
+      out2.println("<p>Type a message and click submit:</p>");
+      out2.println("<form method=\"POST\" action=\"/home\">");
+      out2.println("<textarea name=\"text\"></textarea>");
+      out2.println("<br/>");
+      out2.println("<button>Submit</button>");
+      out2.println("</form>");
     } else {
-      String loginUrl = userService.createLoginURL("/shoutbox");
+      String loginUrl = userService.createLoginURL("/home");
       out.println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
     }
 
@@ -65,14 +86,27 @@ public class ShoutboxServlet extends HttpServlet {
     out.println("</ul>");
   }
 
-  @Override
+  /** Returns the nickname of the user with id, or null if the user has not set a nickname. */
+  private String getUserNickname(String id) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query query =
+        new Query("UserInfo")
+            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
+    PreparedQuery results = datastore.prepare(query);
+    Entity entity = results.asSingleEntity();
+    if (entity == null) {
+      return null;
+    }
+    String nickname = (String) entity.getProperty("nickname");
+    return nickname;
+  }
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     UserService userService = UserServiceFactory.getUserService();
 
     // Only logged-in users can post messages
     if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/shoutbox");
+      response.sendRedirect("/home");
       return;
     }
 
@@ -87,6 +121,6 @@ public class ShoutboxServlet extends HttpServlet {
     datastore.put(messageEntity);
 
     // Redirect to /shoutbox. The request will be routed to the doGet() function above.
-    response.sendRedirect("/shoutbox");
+    response.sendRedirect("/home");
   }
 }

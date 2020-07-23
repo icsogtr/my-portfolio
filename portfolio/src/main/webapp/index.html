@@ -6,13 +6,57 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="loadTasks()">
     <div id="content">
-      <h1>My Portfolio</h1>
+      <h1>Chenxi's Portfolio</h1>
       <p>This is my portfolio.</p>
-      <p>Click here to get a random message:</p>
+
+       <p>About Me:A BUPT girl.</p>
+       <image src="./Image/melondog.jpg">
+       <p></p>
+       <p>projects have worked on</p>
+       <ol>
+       <li> Complete big work from school</li>
+       <li> Do a travel guide to Xi'an</li>
+       <li>Read the English original of the "Harry Potter" series</li>
+       </ol>
+      <a href="https://www.linkedin.com/in/晨曦-张-8309911ab/" target="_blank">My Linkin!</a>
+       <p>Click here to get a random message:</p>
+       <button onclick="addRandomQuote()">Fetch a quote!</button>
+      <div id="quote-container"></div>
+      <!--<p>Click here to get a geeting</p>
+      
       <button onclick="addRandomGreeting()">Hello</button>
-      <div id="greeting-container"></div>
+      <div id="greeting-container"></div>-->
+      <p>Click here to see statistics about the server:</p>
+      <button onclick="getServerStats()">Fetch server stats!</button>
+      <div id="server-stats-container"></div>
+      <form action="/data" method="POST">
+
+      <p>Enter a comma-separated list of words:</p>
+      <textarea name="text-input">one, two, three</textarea>
+      <br/><br/>
+
+      <p>Choose some options:</p>
+      <input type="checkbox" name="upper-case" value="true"> Upper-case
+      <br/>
+      <input type="checkbox" name="sort" value="true"> Alphabetize
+      <br/><br/>
+
+      <input type="submit" />
+    </form>
+
+    <h1>Todo List</h1>
+
+    <form method="POST" action="/new-task">
+      <input type="text" name="title" />
+      <br/>
+      <button>Submit</button>
+    </form>
+
+    <hr/>
+
+    <ul id="task-list"></ul>
     </div>
   </body>
 </html>
